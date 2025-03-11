@@ -4,7 +4,7 @@ This is a Voxel Engine Project that I'm writing from scratch in OpenGL.
 
 # Dependencies
 1.) GLFW\
-2.) GLM\
+2.) GLM
 
 # Project Checklist
   **BASICS**
