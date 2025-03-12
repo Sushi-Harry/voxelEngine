@@ -1,6 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include "Camera.hpp"
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
@@ -17,9 +18,14 @@ public:
     bool isRunning();
     void Update();
 
+    void processMovement(GLFWwindow *window);
+
 private:
     GLFWwindow* window;
-    Voxel* voxel1;
+    Camera camera;
+    Chunk* newChunk;
+    float lastFrame = 0.0f;
+    float deltaTime = 0.0f;
 
     bool initGLFW();
     bool initGLEW();

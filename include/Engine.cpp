@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include "Camera.hpp"
 #include "shaderClass.hpp"
 #include <GLFW/glfw3.h>
 
@@ -45,7 +46,7 @@ bool Engine::initGLEW(){
 }
 
 void Engine::chunkInitialization(){
-    voxel1 = new Voxel(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+    newChunk = new Chunk(camera);
 }
 
 bool Engine::isRunning(){
@@ -53,10 +54,32 @@ bool Engine::isRunning(){
 }
 
 void Engine::Update(){
+
+    float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    voxel1->drawVoxel();
+    
+    newChunk->drawChunk_solid_color(camera);
+    processMovement(window);
+    
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+void Engine::processMovement(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
