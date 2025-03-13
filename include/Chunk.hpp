@@ -1,4 +1,5 @@
 #include <glm/ext/vector_float3.hpp>
+#include <glm/geometric.hpp>
 #include "Camera.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -7,36 +8,14 @@
 
 using namespace std;
 
-/*-------------------------------------------------------------------------------------------------------------*/
-// Plane Struct for Frustum Culling
-struct Plane{
-    // Unit Vector
-    glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
-    // Distance from origin (initialized to be equal to 0.0f)
-    float distance = 0.0f;
-
-};
-
-/*-------------------------------------------------------------------------------------------------------------*/
-// Frustum Class
-struct Frustum{
-    Plane topFace;
-    Plane bottomFace;
-
-    Plane rightFace;
-    Plane leftFace;
-
-    Plane farFace;
-    Plane nearFace;
-};
-
 /*------------------------------------------------------------------------------------------------------------*/
 // Voxel Class
 class Voxel{
 public:
-    Voxel( glm::vec3 PositionVector, glm::vec3 ScaleVector);
+    Voxel( glm::vec3 PositionVector, glm::vec3 ScaleVector, const char* VSPath, const char* FSPath);
     ~Voxel();
     void drawVoxel(Camera camera);
+    void drawLitVoxel(Camera camera, glm::vec3 lightPos);
     void SetActive();
     void setInactive();
     bool isActive();
@@ -51,14 +30,24 @@ private:
     Shader* shader;
 };
 
+class lightObject{
+public:
+    lightObject(glm::vec3 lightPos, Camera inputCamObject);
+    ~lightObject();
+    void drawLight();
+private:
+    Voxel* lightVoxel;
+    Camera camera;
+};
+
 /*-------------------------------------------------------------------------------------------------------------*/
 // Chunk Class
 class Chunk{
 public:
     Chunk(Camera camera);
     ~Chunk();
-    void drawChunk_solid_color(Camera UpdatedCamera);
-    void drawChunk_wireframe(Camera UpdatedCamera);
+    void drawChunk_solid_color(Camera UpdatedCamera, glm::vec3 lightPos);
+    void drawChunk_wireframe(Camera UpdatedCamera, glm::vec3 lightPos);
 
 private:
     Camera cameraObject;
