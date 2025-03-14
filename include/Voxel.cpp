@@ -2,6 +2,7 @@
 #include "Camera.hpp"
 #include "shaderClass.hpp"
 #include <GLFW/glfw3.h>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -103,8 +104,8 @@ void Voxel::drawVoxel(Camera camera){
         unsigned int modelLoc = glGetUniformLocation(shader->shaderID, "model");
         unsigned int viewLoc = glGetUniformLocation(shader->shaderID, "view");
         unsigned int projectionLoc = glGetUniformLocation(shader->shaderID, "projection");
+        model = glm::translate(glm::mat4(1.0f), position);
         model = glm::scale(model, scale);
-        model = glm::translate(model, position);
         view = camera.GetViewMatrix();
         projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 
@@ -115,6 +116,7 @@ void Voxel::drawVoxel(Camera camera){
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+        // std::cout << "Camera Position: "<< camera.Position.x << "," << camera.Position.y << "," << camera.Position.z << std::endl;
     }
 }
 
@@ -133,8 +135,8 @@ void Voxel::drawLitVoxel(Camera camera, glm::vec3 lightPos){
         unsigned int viewLoc = glGetUniformLocation(shader->shaderID, "view");
         unsigned int projectionLoc = glGetUniformLocation(shader->shaderID, "projection");
         unsigned int lightPosLoc = glGetUniformLocation(shader->shaderID, "lightPos");
-        model = glm::scale(model, scale);
         model = glm::translate(model, position);
+        model = glm::scale(model, scale);
         view = camera.GetViewMatrix();
         projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 
@@ -147,6 +149,21 @@ void Voxel::drawLitVoxel(Camera camera, glm::vec3 lightPos){
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);}
         glBindVertexArray(0);
+}
+
+void Voxel::ChunkDrawFunction(Camera camera, glm::vec3 Light_Position, Shader* SharedChunkShader){
+    if(id == 1){
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, position);
+        model = glm::scale(model, scale);
+
+        unsigned int modelLoc = glGetUniformLocation(SharedChunkShader->shaderID, "model");
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+    }
 }
 
 bool Voxel::isActive(){

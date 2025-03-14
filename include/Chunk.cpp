@@ -30,7 +30,7 @@ Chunk::~Chunk(){
     }
 }
 
-void Chunk::drawChunk_solid_color(Camera UpdatedCamera, glm::vec3 lightPos){\
+void Chunk::drawChunk_solid_color(Camera UpdatedCamera, glm::vec3 lightPos){
     cameraObject = UpdatedCamera;
     for(int i = 0; i < 16; i++){
         for(int j = 0; j < 16; j++){
@@ -55,3 +55,21 @@ void Chunk::drawChunk_wireframe(Camera UpdatedCamera, glm::vec3 lightPos){
     }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
+
+void Chunk::drawChunk_lit(Camera UpdatedCamera, glm::vec3 Light_Position){
+    SharedChunkShader->useShader();
+
+    // Correctly set the light position
+    unsigned int lightPosLoc = glGetUniformLocation(SharedChunkShader->shaderID, "lightPos");
+    glUniform3fv(lightPosLoc, 1, glm::value_ptr(Light_Position));
+
+    for(int i = 0; i < 16; i++){
+        for(int j = 0; j < 16; j++){
+            for(int k = 0; k < 16; k++){
+                if(voxels[i][j][k]->isActive())
+                    voxels[i][j][k]->ChunkDrawFunction(UpdatedCamera, Light_Position, SharedChunkShader);
+            }
+        }
+    }
+}
+

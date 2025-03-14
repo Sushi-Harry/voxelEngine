@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "Camera.hpp"
+#include "LightObject.hpp"
 #include "shaderClass.hpp"
 #include <GLFW/glfw3.h>
 #include <cmath>
@@ -32,12 +33,11 @@ Engine::Engine(int WIDTH, int HEIGHT, const char* TITLE){
     }
     glViewport(0,0,800,600);
     glfwSwapInterval(1);
-
-    // Lighting initialisation
-    light = new lightObject(glm::vec3(10.0f, 20.0f, 0.0f), camera);
 }
 
 Engine::~Engine(){
+    delete newChunk;
+    delete newLight;
     glfwDestroyWindow(window);
     glfwTerminate();
 }
@@ -50,6 +50,12 @@ bool Engine::initGLFW(){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK); // Only render front faces
+    glFrontFace(GL_CCW); // Counter-clockwise winding for front faces
+
     return true;
 }
 
@@ -60,6 +66,7 @@ bool Engine::initGLEW(){
 
 void Engine::chunkInitialization(){
     newChunk = new Chunk(camera);
+    newLight = new LightObject();
 }
 
 bool Engine::isRunning(){
@@ -75,9 +82,7 @@ void Engine::Update(){
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // light->drawLight();
-    
-    newChunk->drawChunk_solid_color(camera, glm::vec3(-10.0f, 5.0f, 0.0f));
+    newChunk->drawChunk_solid_color(camera, newLight->LightPosition());
     processMovement(window);
     
     glfwSwapBuffers(window);

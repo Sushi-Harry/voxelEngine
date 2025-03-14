@@ -6,6 +6,7 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 #include "Chunk.hpp"
+#include "LightObject.hpp"
 
 class Engine{
 
@@ -26,7 +27,7 @@ private:
     GLFWwindow* window;
     Camera camera;
     Chunk* newChunk;
-    lightObject* light;
+    LightObject* newLight;
     
     float lastFrame = 0.0f;
     float deltaTime = 0.0f;
